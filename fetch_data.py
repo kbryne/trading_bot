@@ -4,11 +4,11 @@ import pandas_ta as ta
 import matplotlib.pyplot as plt
 import numpy as np
 
+# tester ut yfinance
 norsk_hydro = yf.Ticker("NHY.OL")
 info = norsk_hydro.info
 data_hist = norsk_hydro.history(period="max")
 metadata = norsk_hydro.history_metadata
-# dividends and stock splits
 div_n_splits =norsk_hydro.actions
 div = norsk_hydro.dividends
 splits = norsk_hydro.splits
@@ -28,9 +28,14 @@ recommendations_sum = norsk_hydro.recommendations_summary
 upgrades_downgrades = norsk_hydro.upgrades_downgrades
 earnings_dates = norsk_hydro.earnings_dates
 isin = norsk_hydro.isin
-print(isin)
-
-# share count
+options = norsk_hydro.options
+news = norsk_hydro.news
 share_count = norsk_hydro.get_shares_full(start="1900-01-01", end="2100-01-01")
+
+# Technical analysis
+stock = yf.Ticker("NHY.OL")
+data = stock.history(period="max")
+data_rsi = data.ta.rsi()
+print(data_rsi)
 
 
