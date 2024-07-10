@@ -33,7 +33,7 @@ news = norsk_hydro.news
 share_count = norsk_hydro.get_shares_full(start="1900-01-01", end="2100-01-01")
 
 # Technical analysis
-stock = yf.Ticker("ELMRA.OL")
+stock = yf.Ticker("CRAYN.OL")
 data = stock.history(period="max")
 
 # append because
@@ -43,8 +43,6 @@ data_rsi = data.ta.rsi(close="close", length=14, append=True)
 data['Buy'] = (data['RSI_14'] < 30) & (data['RSI_14'].shift(1) >= 30)
 data['Sell'] = (data['RSI_14'] > 70) & (data['RSI_14'].shift(1) <= 70)
 
-
-
 # Plotting
 plt.figure(figsize=(12, 8))
 
@@ -52,7 +50,7 @@ plt.figure(figsize=(12, 8))
 plt.plot(data.index, data['Close'], label='Close Price', color='blue')
 plt.xlabel('Year')
 plt.ylabel('Share price')
-plt.title('Elmera group - Stock Price and RSI')
+plt.title('Stock Price and RSI')
 
 # Plot RSI
 plt.twinx()  # Create a secondary y-axis for RSI
