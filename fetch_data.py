@@ -67,26 +67,3 @@ plt.scatter(data.index[data['Sell']], data['Close'][data['Sell']], marker='v', c
 plt.legend(loc='upper left')
 plt.tight_layout()
 plt.show()
-
-#%%
-
-# One plot
-
-plt.figure(figsize=(12, 8))
-
-# Plot stock price
-plt.plot(data.index, data['Close'])
-plt.xlabel('Year')
-plt.ylabel('Share price/RSI value')
-plt.title('Crayon')
-
-# Plot RSI
-plt.plot(data.index, data['RSI_14'])
-plt.axhline(30, color='blue')
-plt.axhline(70, color='blue')
-
-# Plot buy and sell indicator
-plt.scatter(data.index[data['Buy']], data['RSI_14'][data['Buy']], marker='^', color='green')
-plt.scatter(data.index[data['Sell']], data['RSI_14'][data['Sell']], marker='v', color='red')
-plt.show()
-#%%
