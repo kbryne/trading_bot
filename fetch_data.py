@@ -1,4 +1,3 @@
-# import enum
 import yfinance as yf
 import pandas as pd
 import pandas_ta as ta
@@ -51,20 +50,8 @@ stock = yf.Ticker("CRAYN.OL")
 data = stock.history(period="max")
 data['RSI_14'] = ta.rsi(data['Close'], length=14)
 
-"""@enum.Enum
-class StrategyFunction:
-    SMA = "SMA"
-    RSI = "RSI"
-"""
 
 class RSI(Strategy):
-    """def __init__(self, func: StrategyFunction = SMA):
-        self.func = None
-        match func:
-            case StrategyFunction.SMA:
-                self.func = SMA
-            case StrategyFunction.RSI:
-                self.func = ta.rsi"""
     def init(self):
         self.rsi = self.I(ta.rsi, self.data.Close, 14)
         print(self.rsi)

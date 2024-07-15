@@ -5,8 +5,9 @@ from backtesting import Backtest, Strategy
 from backtesting.lib import crossover
 
 # Fetch data
-stock = yf.Ticker("NHY.OL")
-data = stock.history(start="2004-08-01", end="2013-03-04")
+stock = yf.Ticker("CRAYN.OL")
+data = stock.history(start="2017-10-15", end="2024-07-15")
+
 
 # Calculate RSI manually
 def calculate_rsi(data, window=14):
@@ -18,25 +19,29 @@ def calculate_rsi(data, window=14):
     data['RSI'] = rsi
     return data
 
+
 data = calculate_rsi(data)
 data.dropna(inplace=True)
 
 # Verify RSI calculation outside the strategy
 print(data[['Close', 'RSI']].tail(20))
 
+
 class RSIStrategy(Strategy):
     def init(self):
-        self.rsi = self.I(lambda series: series.RSI.values, self.data.df)
+        self.rsi = self.I(lambda: self.data.RSI, name='RSI')
 
     def next(self):
-        if crossover(self.rsi, 70):
-            if self.position:
+        current_rsi = self.rsi[-1]
+        last_rsi = self.rsi[-2]
+
+        if self.position:
+            if current_rsi > 70 and last_rsi <= 70:
                 self.position.close()
-            self.sell()
-        elif crossover(30, self.rsi):
-            if self.position:
-                self.position.close()
-            self.buy()
+        else:
+            if current_rsi < 30 and last_rsi >= 30:
+                self.buy()
+
 
 # Perform the backtest
 bt = Backtest(data, RSIStrategy, cash=10000, commission=0.002)
