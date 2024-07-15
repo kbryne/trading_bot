@@ -1,4 +1,4 @@
-#%%
+# import enum
 import yfinance as yf
 import pandas as pd
 import pandas_ta as ta
@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from backtesting import Backtest, Strategy
 from backtesting.lib import crossover
+from backtesting.test import GOOG, SMA
 
 # Fetch data
 stock = yf.Ticker("CRAYN.OL")
@@ -13,9 +14,6 @@ data = stock.history(period="max")
 
 # append rsi to dataframe
 data['RSI_14'] = ta.rsi(data['Close'], length=14)
-
-# Drop NaN values in RSI_14 column
-# data.dropna(subset=['RSI_14'], inplace=True)
 
 # Plotting
 data['Buy'] = (data['RSI_14'] < 30) & (data['RSI_14'].shift(1) >= 30)
@@ -48,25 +46,37 @@ plt.tight_layout()
 plt.show()
 
 # Backtesting
-class RSIStrategy(Strategy):
+
+stock = yf.Ticker("CRAYN.OL")
+data = stock.history(period="max")
+data['RSI_14'] = ta.rsi(data['Close'], length=14)
+
+"""@enum.Enum
+class StrategyFunction:
+    SMA = "SMA"
+    RSI = "RSI"
+"""
+
+class RSI(Strategy):
+    """def __init__(self, func: StrategyFunction = SMA):
+        self.func = None
+        match func:
+            case StrategyFunction.SMA:
+                self.func = SMA
+            case StrategyFunction.RSI:
+                self.func = ta.rsi"""
     def init(self):
-        # checking RSI values
-        self.rsi = self.data['RSI_14']
-
+        self.rsi = self.I(ta.rsi, self.data.Close, 14)
+        print(self.rsi)
     def next(self):
-        # print current rsi
-        print(f"Current RSI: {self.rsi[-1]}")
-
-        if self.rsi[-1] < 30 and self.rsi[-2] >= 30:
-            print("RSI crossed below 30, buy")
-            self.buy()
-        elif self.rsi[-1] > 70 and self.rsi[-2] <= 70:
-            print("RSI crossed above 70, sell")
+        current_rsi = self.rsi[-1]
+        last_rsi = self.rsi[-2]
+        if current_rsi > 70 and last_rsi <= 70:
             self.sell()
+        elif current_rsi < 30 and last_rsi >= 30:
+            self.buy()
 
-
-
-bt = Backtest(data, RSIStrategy, cash=10000, commission=0.002)
+bt = Backtest(data, RSI, cash=10000, commission=0.002)
 stats = bt.run()
 
 
@@ -85,14 +95,6 @@ plt.axhline(30, color='blue', linestyle='--', label='Oversold (30)')
 plt.axhline(70, color='blue', linestyle='--', label='Overbought (70)')
 plt.ylabel('RSI')
 
-# Plot buy and sell signals based on hypothetical _Stats structure
-if hasattr(stats, 'closed_trades') and len(stats.closed_trades) > 0:
-    for trade in stats.closed_trades:
-        if trade.type == 'buy':
-            plt.scatter(trade.exit_date, trade.exit_price, marker='^', color='green', label='Buy Signal')
-        elif trade.type == 'sell':
-            plt.scatter(trade.exit_date, trade.exit_price, marker='v', color='red', label='Sell Signal')
-
 # Adjust legend and layout
 plt.legend(loc='upper left')
 plt.tight_layout()
@@ -101,13 +103,8 @@ plt.show()
 # Display backtest results
 print(stats)
 
-
-
-
-
-
 # tester ut yfinance
-stock = yf.Ticker("NHY.OL")
+"""stock = yf.Ticker("NHY.OL")
 info = stock.info
 data_hist = stock.history(period="max")
 metadata = stock.history_metadata
@@ -132,4 +129,5 @@ earnings_dates = stock.earnings_dates
 isin = stock.isin
 options = stock.options
 news = stock.news
-share_count = stock.get_shares_full(start="1900-01-01", end="2100-01-01")
+share_count = stock.get_shares_full(start="1900-01-01", end="2100-01-01")"""
+
